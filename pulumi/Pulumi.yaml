@@ -1,0 +1,3 @@
+name: oidc-github-to-aws
+description: A minimal AWS TypeScript Pulumi program
+runtime: nodejs
