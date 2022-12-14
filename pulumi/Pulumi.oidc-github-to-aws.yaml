@@ -1,0 +1,4 @@
+encryptionsalt: v1:y+CTmmp3f+Q=:v1:uterKJP/l9lpqIk6:jdMlWSOXnAnmfKC7s2bs/5KHzEfIxQ==
+config:
+  aws:region: eu-west-1
+  oidc-github-to-aws:orgName: djsd123

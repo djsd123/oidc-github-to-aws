@@ -15,12 +15,16 @@ Configures AWS to trust GitHub as a federated auth provider
 
 ## Inputs
 
-| Name     | Description                                                                                                      | Type     | Default   | Required |
-|----------|------------------------------------------------------------------------------------------------------------------|----------|-----------|:--------:|
-| org_name | The name of the GitHub Org. i.e. I have no org so I just use my username: `djsd123` Common name for all resources. | `string` | `djsd123` |    no    |
+| Name       | Description                                                                                                        | Type     | Default   | Required |
+|------------|--------------------------------------------------------------------------------------------------------------------|----------|-----------|:--------:|
+| `org_name` | The name of the GitHub Org. i.e. I have no org so I just use my username: `djsd123` Common name for all resources. | `string` | `djsd123` |    no    |
 
 
-## Usage
+## Terraform Usage
+
+```shell
+cd terraform
+```
 
 Modify state in [versions.tf](terraform/versions.tf) to your own
 
@@ -42,18 +46,58 @@ terraform plan
 terraform apply -var org_name=<GitHub ORG NAME> -auto-approve
 ```
 
+
+## Pulumi Usage
+
+```shell
+cd pulumi
+```
+
+**Set required environment variables**
+
+```shell
+export PULUMI_PREFER_YARN=true
+export PULUMI_BACKEND_URL=<STATE BUCKET NAME>
+```
+
+**Install Dependencies**
+
+```shell
+yarn install
+```
+
+**Initialise**
+
+```shell
+pulumi stack init
+```
+
+**Plan/Preview**
+
+```shell
+pulumi preview
+```
+
+**Update/Apply**
+
+```shell
+pulumi up
+```
+
 ## Outputs
 
-| Name     | Description                                        |
-|----------|----------------------------------------------------|
-| role_arn | The ARN of the resulting role that will be created |
+| Name               | Description                                        |
+|--------------------|----------------------------------------------------|
+| `role_arn` / `roleArn` | The ARN of the resulting role that will be created |
 
 
-**Note**
+### Note
 
-This will allow an entire Org to authenticate with AWS.  Ideally (Best Practice) you would want to scope to a particular 
-respository in [data.tf](terraform/data.tf) Line 16. i.e. `repo:djsd123/oidc-github-to-aws:*` or `repo:hashicorp/terraform-provider-aws:*`
+At present this config will allow an entire Org to authenticate with AWS.  Ideally (Best Practice) you would want to scope to a particular 
+respository in [data.tf](terraform/data.tf) Line 16 / [iam.ts](pulumi/iam.ts) Line 28.  i.e. `repo:djsd123/oidc-github-to-aws:*` or `repo:hashicorp/terraform-provider-aws:*`
 
+
+**HCL**
 
 ```terraform
     condition {
@@ -61,4 +105,17 @@ respository in [data.tf](terraform/data.tf) Line 16. i.e. `repo:djsd123/oidc-git
       values   = ["repo:<ORG NAME>/<REPO NAME>:*"]
       variable = "token.actions.githubusercontent.com:sub"
     }
+```
+
+
+**TypeScript**
+
+```typescript
+    conditions: [
+        {
+            test: 'StringLike',
+            values: [`repo:<ORG NAME>/<REPO NAME>:*`],
+            variable: 'token.actions.githubusercontent.com:sub'
+        }
+    ]
 ```
